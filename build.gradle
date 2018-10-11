@@ -1,0 +1,37 @@
+import jaci.openrio.gradle.GradleRIOPlugin
+import jaci.openrio.gradle.frc.FRCJavaArtifact
+import jaci.openrio.gradle.frc.RoboRIO
+
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.2.71'
+    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06"
+}
+
+group 'com.lynbrookrobotics'
+version '0.0.1'
+
+repositories.mavenCentral()
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile wpilib()
+}
+
+sourceCompatibility = 1.8
+compileKotlin.kotlinOptions.jvmTarget = "1.8"
+compileTestKotlin.kotlinOptions.jvmTarget = "1.8"
+
+jar {
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest GradleRIOPlugin.javaManifest('com.lynbrookrobotics.workshops.FunkyRobot')
+}
+
+deploy {
+    targets { target('roborio', RoboRIO) { team = 846 } }
+    artifacts {
+        artifact(rootProject.name, FRCJavaArtifact) {
+            targets << 'roborio'
+        }
+    }
+}
